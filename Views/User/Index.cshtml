@@ -1,0 +1,67 @@
+﻿<div id="user">
+    {{message}}
+    
+    <div class="form-group">
+        <label for="search">Search</label>
+        <input type="text" v-model="search" />
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Номер</th>
+                <th>Название</th>
+                <th>Жанр</th>
+                <th>Режиссер</th>
+                <th>Актер</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(film, index) in films">
+                <td>{{index+1}}</td>
+                <td>{{film.name}}</td>
+                <td>{{film.genre}}</td>
+                <td>{{film.director}}</td>
+                <td>{{film.actor}}</td>
+
+                <td><button type="button" class="btn btn-default btn-lg" v-on:click="addToFavorite(film)"><span class="glyphicon glyphicon-heart"></span> Add to favorite</button></td>
+                <td><button type="button" class="btn btn-default btn-lg" v-on:click="showNewReviewModal(film)"><span class="glyphicon glyphicon-heart"></span> Add review</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+@section scripts{
+    <script src="~/lib/vue/vue.min.js"></script>
+    <script>
+        new Vue({
+            el: "#user",
+            data: {
+                maessage:"Hello",
+                films: [],
+                name: "",
+                genre: "",
+                director: "",
+                actor: ""
+            },
+            created: function () {
+                this.getFavoriteFilms();
+            },
+            methods: {
+                getFavoriteFilms() {
+                    var vm = this;
+                    $.ajax({ url: "/user", method: "GET" })
+                        .done(function (data) {
+                            vm.films = data;
+                            toastr.success("Success");
+                        }).fail(function () {
+                            toastr.error("Error");
+                        });
+                }
+
+            }
+
+          
+        });
+  </script>
+
+}

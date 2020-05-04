@@ -1,0 +1,283 @@
+﻿<div id="app">
+    {{message}}
+    @if (User.IsInRole("admin"))
+    {
+        <div>
+            <button class="btn btn-primary" v-on:click="showNewFilmModal">Add new film</button>
+        </div>
+    }
+   
+    <div class="form-group">
+        <label for="search">Search</label>
+        <input type="text" v-model="search" />
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Номер</th>
+                <th>Название</th>
+                <th>Жанр</th>
+                <th>Режиссер</th>
+                <th>Актер</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(film, index) in filteredFilms">
+                <td>{{index+1}}</td>
+                <td>{{film.name}}</td>
+                <td>{{film.genre}}</td>
+                <td>{{film.director}}</td>
+                <td>{{film.actor}}</td>
+
+                <td><button type="button" class="btn btn-default btn-lg" v-on:click="addToFavorite(film)">Like</button></td>
+                <td><button type="button" class="btn btn-default btn-lg" v-on:click="showNewReviewModal(film)"> Add review</button></td>
+                <td><button type="button" class="btn btn-default btn-lg" v-on:click="showReviews(film)">Show reviews</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="modal fade" id="addNewFilmModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">New film</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input v-model="name" type="text" class="form-control" style="width:100%" />
+                        </div>
+                        <div class="form-group">
+                            <label for="genre">Genre</label>
+                            <input v-model="genre" type="text" class="form-control" style="width:100%" />
+                        </div>
+                        <div class="form-group">
+                            <label for="director">Director</label>
+                            <input v-model="director" type="text" class="form-control" style="width:100%" />
+                        </div>
+                        <div class="form-group">
+                            <label for="actor">Actor</label>
+                            <input v-model="actor" type="text" class="form-control" style="width:100%" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click="addFilm">Save changes</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal fade" id="addReviewModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Your review</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+
+                        <div class="form-group">
+                            <label for="text">Text</label>
+                            <input v-model="text" type="text" class="form-control" style="width:100%" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click="addReview(filmId)">Send</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @*<div class="modal fade" id="showReviewTable" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Номер</th>
+                                <th>Комментарий</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(review, index) in reviews">
+                                <td>{{index+1}}</td>
+                                <td>{{review.text}}</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>*@
+
+
+</div>
+
+
+@section scripts{
+    <script src="~/lib/vue/vue.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                message: 'Hello Vue',
+                films: [],
+                film: [],
+                filmId: "",
+                reviews: [],
+                chosenFilm: '',
+                search: '',
+                name: "",
+                genre: "",
+                director: "",
+                actor: "",
+                text: "",
+                id: null
+
+            },
+            created: function () {
+                this.getFilms();
+            },
+            computed: {
+                        
+                filteredFilms: function () {
+                    var matcher = new RegExp(this.search, 'i')
+                    return this.films.filter(function (film) {
+                        //return matcher.test(film.name) только по названию
+                        return matcher.test([film.name, film.director, film.genre].join())
+                    })
+                }
+
+            },
+
+
+            methods: {
+                clearData: function () {
+                    var vm = this;
+                    vm.name = "";
+                    vm.genre = "";
+                    vm.director = "";
+                    vm.actor = "";
+                    text = "";
+                    id = null;
+                },
+                //showReviews: function (item) {
+                //    var vm = this;
+                //    var chosenFilm = {
+                //        id: item.id
+                //    }
+                //    $.ajax({ url: "/review", data: chosenFilm, method: "GET" })
+                //        .done(function (dataSet) {
+                //            vm.reviews = dataSet;
+                //            toastr.success();
+                //        }).fail(function () {
+                //            toastr.error("CAN`T SHOW REVIEWS");
+                //        });
+                //    $("#showReviewTable").modal("show");
+
+                           
+
+                //},
+
+                addToFavorite: function (item) {
+
+                    var likeFilm = {
+                        id: item.id
+                    }
+
+                    $.ajax({ url: "/film", data: likeFilm, method: "PUT" })
+                        .done(function (data) {
+                            toastr.success(data);
+                        }).fail(function () {
+                            toastr.error("Can`t add to favorite");
+
+                        });
+
+                },
+                showNewReviewModal: function (item) {
+                    id = item.id
+                    $("#addReviewModal").modal("show");
+
+                },
+
+                addReview: function (item) {
+                    var vm = this;
+
+                    var newReview = {
+                        filmId: id,
+                        text: vm.text
+                    }
+
+                    $.ajax({ url: "/review", data: newReview, method: "POST" })
+                        .done(function (data) {
+                            vm.reviews.splice(0, 0, newReview);
+                            toastr.success(data)
+                        }).fail(function () {
+                            toastr.error("Can`t add review");
+                        }).always(function () {
+                            vm.clearData();
+                        });
+                    $("#addReviewModal").modal("hide");
+                },
+                showNewFilmModal: function () {
+                    $("#addNewFilmModal").modal("show");
+
+                },
+                addFilm: function () {
+                    var vm = this;
+                    var newFilm = {
+                        name: vm.name,
+                        genre: vm.genre,
+                        director: vm.director,
+                        actor: vm.actor,
+                        userId: vm.userId,
+                        reviewId: vm.reviewId
+                    }
+                    $.ajax({ url: "/film", data: newFilm, method: "POST" })
+                        .done(function (data) {
+                            vm.films.splice(0, 0, newFilm);
+                            toastr.success("New film added");
+                        }).fail(function () {
+                            toastr.error("Can`t add new film:(");
+                        }).always(function () {
+                            vm.clearData();
+                        });
+
+                    $('#addNewFilmModal').modal('hide');
+
+                },
+                getFilms: function () {
+                    var vm = this;
+                    $.ajax({ url: "/film", method: "GET" })
+                        .done(function (data) {
+                            vm.films = data;
+                        }).fail(function () {
+                            toastr.error("Error");
+                        });
+                }
+            }
+        });
+
+
+    </script>
+
+}

@@ -21,12 +21,12 @@ namespace TestFilms.Controllers
             _db = db;
         }
         /// <summary>
-        /// 
+        /// Получение всех фильмов
         /// </summary>
         /// <returns></returns>
-        [Route("/film")]
+        [Route("/films")]
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetAllFilms()
         {
             var listOfFilms =  _db.Films;
             if (listOfFilms == null)
@@ -37,54 +37,61 @@ namespace TestFilms.Controllers
            
         }
         /// <summary>
-        /// 
+        /// Добавление нового фильма
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [Authorize]
         [Route("/film")]
         [HttpPost]
-        public async Task<IActionResult> Post(Film model)
+        public async Task<IActionResult> AddNewFilm(Film model)
         {
             _db.Films.Add(model);
             await _db.SaveChangesAsync();
             return Ok(model);
         }
         /// <summary>
-        /// добавление фильма в список понравившися
+        /// Добавление фильма в список понравившихся 
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [Authorize]
-        [Route("/film")]
-        [HttpPut]
-        public IActionResult Put(Film model)
+        [Route("/films")]
+        [HttpPost]
+        public IActionResult AddToFavorite(Film model)
         {
             var usrName = User.Identity.Name;
             var user = _db.Users.FirstOrDefault(x => x.UserName == usrName);
-            var check_user = _db.UsersFavoriteFilms.Where(u => u.UserId == user.Id && u.FilmId == model.Id);
-           
-            if (check_user != null)
+            try
             {
-                return Ok("You`re already liked this film!");
+                var isFilmFavoriteForUser = _db.UsersFavoriteFilms.Any(u => u.UserId == user.Id && u.FilmId == model.Id);
 
+                if (isFilmFavoriteForUser == true)
+                {
+                    return Ok("You have already liked this movie!");
+
+                }
+
+                Film currfilm = _db.Films.FirstOrDefault(x => x.Id == model.Id);
+                UserFavoriteFilm favoriteFilm = new UserFavoriteFilm();
+                favoriteFilm.UserId = user.Id;
+
+                favoriteFilm.FilmId = currfilm.Id;
+
+                _db.UsersFavoriteFilms.Add(favoriteFilm);
+
+
+                _db.SaveChanges();
+                return Ok("You liked this movie");
             }
-            
-            Film currfilm = _db.Films.FirstOrDefault(x => x.Id == model.Id);
-            UserFavoriteFilm favoriteFilm = new UserFavoriteFilm();
-            favoriteFilm.UserId = user.Id;
-
-            favoriteFilm.FilmId = currfilm.Id;         
-            
-            _db.UsersFavoriteFilms.Add(favoriteFilm);
-            
-            
-            _db.SaveChanges();
-            return Ok("You like this film");
+            catch (InvalidCastException e)
+            {
+                return BadRequest(e);
+            }
 
         }
         /// <summary>
-        /// добвление отзыва к фильму
+        /// Добавление отзыва к фильму
         /// </summary>
         /// <param name="filmId"></param>
         /// <param name="text"></param>
@@ -92,43 +99,37 @@ namespace TestFilms.Controllers
         [Authorize]
         [Route("/review")]
         [HttpPost]
-        public IActionResult Post(int filmId, string text)
+        public IActionResult AddReview(int filmId, string text)
         {
            
             var usrName = User.Identity.Name;
             var user = _db.Users.FirstOrDefault(x => x.UserName == usrName);
-            var check_user = _db.Reviews.Where(u => u.UserId == user.Id && u.FilmId == filmId);
-           
-            if (check_user != null) 
-                
+            try
             {
-                return Ok("You already commented this film!");
+                var isUserCommentedFilm = _db.Reviews.Any(u => u.UserId == user.Id && u.FilmId == filmId);
 
+                if (isUserCommentedFilm == true)
+
+                {
+                    return Ok("You have already commented this movie!");
+
+                }
+
+                Review review = new Review();
+                review.FilmId = filmId;
+                review.UserId = user.Id;
+                review.Text = text;
+                _db.Reviews.Add(review);
+                _db.SaveChanges();
+                return Ok("Comment added");
+            }
+            catch (InvalidCastException e)
+            {
+                return BadRequest(e);
             }
 
-            Review review = new Review();
-            review.FilmId = filmId;
-            review.UserId = user.Id; 
-            review.Text = text;
-            _db.Reviews.Add(review);
-            _db.SaveChanges();
-            return Ok("Comment added");
-            
+
         }
-        
-
-        //[HttpGet]        
-        //[Route("/review")]
-        //public IActionResult Get(int filmId)
-        //{
-        //    var listOfReviews = _db.Reviews.Select(x => x.FilmId == filmId);
-        //    if (listOfReviews == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(listOfReviews);
-
-        //}
 
     }
     

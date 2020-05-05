@@ -16,6 +16,7 @@ namespace TestFilms.Data
             
         }
         public virtual DbSet<IdentityUser> User { get; set; }
+        
         public DbSet<Film> Films { get; set; }
         public DbSet<UserFavoriteFilm> UsersFavoriteFilms { get; set; }
         public DbSet<Review> Reviews { get; set; }

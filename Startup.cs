@@ -37,12 +37,11 @@ namespace TestFilms
                 .AddDefaultTokenProviders(); 
             services.AddControllersWithViews();
             services.AddRazorPages();
-            //services.AddMvc();
-            //services.AddIdentityCore<IdentityUser>();
+         
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)//, RoleManager<IdentityRole> roleManager,UserManager<User> userManager)
         {
             if (env.IsDevelopment())
             {
@@ -69,25 +68,16 @@ namespace TestFilms
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        name: "default",
-            //        template: "{controller=Home}/{action=Index}/{id?}");
-
-            //    routes.MapSpaFallbackRoute(
-            //        name: "spa-fallback",
-            //        defaults: new { controller = "Home", action = "Index" });
-            //});
-
+           
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
-
+                 
             });
+            AppDbInitializer.Initialize(context);//, roleManager, userManager);
         }
     }
 }

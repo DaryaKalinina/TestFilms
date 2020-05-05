@@ -1,11 +1,11 @@
 ﻿<div id="app">
-    {{message}}
+    
     @if (User.IsInRole("admin"))
     {
         <div>
             <button class="btn btn-primary" v-on:click="showNewFilmModal">Add new film</button>
         </div>
-    }
+     }
    
     <div class="form-group">
         <label for="search">Search</label>
@@ -34,7 +34,7 @@
 
                 <td><button type="button" class="btn btn-default btn-lg" v-on:click="addToFavorite(film)">Like</button></td>
                 <td><button type="button" class="btn btn-default btn-lg" v-on:click="showNewReviewModal(film)"> Add review</button></td>
-                <td><button type="button" class="btn btn-default btn-lg" v-on:click="showReviews(film)">Show reviews</button></td>
+                
             </tr>
         </tbody>
     </table>
@@ -107,28 +107,7 @@
         </div>
 
     </div>
-    @*<div class="modal fade" id="showReviewTable" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Номер</th>
-                                <th>Комментарий</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(review, index) in reviews">
-                                <td>{{index+1}}</td>
-                                <td>{{review.text}}</td>
-
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>*@
-
+    
 
 </div>
 
@@ -139,7 +118,7 @@
         var app = new Vue({
             el: "#app",
             data: {
-                message: 'Hello Vue',
+                
                 films: [],
                 film: [],
                 filmId: "",
@@ -177,38 +156,21 @@
                     vm.genre = "";
                     vm.director = "";
                     vm.actor = "";
-                    text = "";
+                    vm.text = "";
                     id = null;
                 },
-                //showReviews: function (item) {
-                //    var vm = this;
-                //    var chosenFilm = {
-                //        id: item.id
-                //    }
-                //    $.ajax({ url: "/review", data: chosenFilm, method: "GET" })
-                //        .done(function (dataSet) {
-                //            vm.reviews = dataSet;
-                //            toastr.success();
-                //        }).fail(function () {
-                //            toastr.error("CAN`T SHOW REVIEWS");
-                //        });
-                //    $("#showReviewTable").modal("show");
-
-                           
-
-                //},
-
+                
                 addToFavorite: function (item) {
 
                     var likeFilm = {
                         id: item.id
                     }
 
-                    $.ajax({ url: "/film", data: likeFilm, method: "PUT" })
+                    $.ajax({ url: "/films", data: likeFilm, method: "POST" })
                         .done(function (data) {
                             toastr.success(data);
                         }).fail(function () {
-                            toastr.error("Can`t add to favorite");
+                            toastr.error("Where is no apportunity to add to the favorite movies");
 
                         });
 
@@ -232,7 +194,7 @@
                             vm.reviews.splice(0, 0, newReview);
                             toastr.success(data)
                         }).fail(function () {
-                            toastr.error("Can`t add review");
+                            toastr.error("Where is no apportunity to add review");
                         }).always(function () {
                             vm.clearData();
                         });
@@ -257,7 +219,7 @@
                             vm.films.splice(0, 0, newFilm);
                             toastr.success("New film added");
                         }).fail(function () {
-                            toastr.error("Can`t add new film:(");
+                            toastr.error("Where is no apportunity to add new movie:(");
                         }).always(function () {
                             vm.clearData();
                         });
@@ -267,7 +229,7 @@
                 },
                 getFilms: function () {
                     var vm = this;
-                    $.ajax({ url: "/film", method: "GET" })
+                    $.ajax({ url: "/films", method: "GET" })
                         .done(function (data) {
                             vm.films = data;
                         }).fail(function () {

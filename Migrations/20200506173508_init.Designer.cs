@@ -10,8 +10,8 @@ using TestFilms.Data;
 namespace TestFilms.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200419171241_2")]
-    partial class _2
+    [Migration("20200506173508_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

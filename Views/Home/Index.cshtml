@@ -14,12 +14,11 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Номер</th>
-                <th>Название</th>
-                <th>Жанр</th>
-                <th>Режиссер</th>
-                <th>Актер</th>
-                <th></th>
+                <th>№</th>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Producer</th>
+                <th>Actor</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -91,7 +90,7 @@
                     <div class="form-group">
 
                         <div class="form-group">
-                            <label for="text">Text</label>
+                            <label for="text">You can add your own review </label>
                             <input v-model="text" type="text" class="form-control" style="width:100%" />
                         </div>
 
@@ -142,7 +141,7 @@
                     var matcher = new RegExp(this.search, 'i')
                     return this.films.filter(function (film) {
                         //return matcher.test(film.name) только по названию
-                        return matcher.test([film.name, film.director, film.genre].join())
+                        return matcher.test([film.name, film.director, film.genre, film.actor].join())
                     })
                 }
 
@@ -170,7 +169,7 @@
                         .done(function (data) {
                             toastr.success(data);
                         }).fail(function () {
-                            toastr.error("Where is no apportunity to add to the favorite movies");
+                            toastr.error("Where is no apportunity to add it to the favorites");
 
                         });
 

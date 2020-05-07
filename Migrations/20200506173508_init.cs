@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TestFilms.Migrations
 {
-    public partial class new_relationship : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -199,7 +199,6 @@ namespace TestFilms.Migrations
                 {
                     UserId = table.Column<Guid>(nullable: false),
                     FilmId = table.Column<int>(nullable: false),
-                    Id = table.Column<int>(nullable: false),
                     Text = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -224,8 +223,7 @@ namespace TestFilms.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(nullable: false),
-                    FilmId = table.Column<int>(nullable: false),
-                    Id = table.Column<int>(nullable: false)
+                    FilmId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

@@ -42,6 +42,10 @@
     <Compile Remove="Migrations\20200419155900_new_relationship.Designer.cs" />
     <Compile Remove="Migrations\20200505172345_repairs.cs" />
     <Compile Remove="Migrations\20200505172345_repairs.Designer.cs" />
+    <Compile Remove="Migrations\20200506164550_3.cs" />
+    <Compile Remove="Migrations\20200506164550_3.Designer.cs" />
+    <Compile Remove="Migrations\20200506172648_init.cs" />
+    <Compile Remove="Migrations\20200506172648_init.Designer.cs" />
   </ItemGroup>
 
 

@@ -77,7 +77,7 @@ namespace TestFilms
                 endpoints.MapRazorPages();
                  
             });
-            AppDbInitializer.Initialize(context);//, roleManager, userManager);
+            AppDbInitializer.Initialize(context);
         }
     }
 }

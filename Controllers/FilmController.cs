@@ -90,13 +90,69 @@ namespace TestFilms.Controllers
             }
 
         }
+        [HttpPost]
+        [Route("/searchfilms")]
+        public IActionResult SearchFilm(string genre,string actor,string director)
+        {
+            //все поля заполнены 111
+            if(genre != null && actor!=null && director!=null)
+            {
+                var listOfFilms = _db.Films.Where(x => x.Genre == genre && x.Actor == actor && x.Director == director).ToList();
+                return Ok(listOfFilms);
+            }
+            //110
+            if (genre != null && actor != null && director == null)
+            {
+                var listOfFilms = _db.Films.Where(x => x.Genre == genre && x.Actor == actor).ToList();
+                return Ok(listOfFilms);
+            }
+            // 101
+            if (genre != null && actor == null && director != null) {
+
+                var listOfFilms = _db.Films.Where(x => x.Genre == genre && x.Director == director).ToList();
+                return Ok(listOfFilms);
+            }
+            //100
+            if (genre != null && actor == null && director == null)
+            {
+                var listOfFilms = _db.Films.Where(x => x.Genre == genre).ToList();
+                return Ok(listOfFilms);
+            }
+            //010
+            if (genre == null && actor != null && director == null)
+            {
+                var listOfFilms = _db.Films.Where(x => x.Actor == actor).ToList();
+                return Ok(listOfFilms);
+            }
+            //011
+            if (genre == null && actor != null && director != null)
+            {
+                var listOfFilms = _db.Films.Where(x => x.Actor == actor && x.Director == director).ToList();
+                return Ok(listOfFilms);
+            }
+            //001
+            if (genre == null && actor == null && director != null)
+            {
+                var listOfFilms = _db.Films.Where(x => x.Director == director).ToList();
+                return Ok(listOfFilms);
+            }
+            if (genre == null && actor == null && director == null)
+            {
+                
+                return Ok("You didn't fill in the search parameters");
+            }
+
+
+            return Ok("I have nothing to show you.");
+
+        }
         /// <summary>
         /// Добавление отзыва к фильму
         /// </summary>
         /// <param name="filmId"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [Route("/review")]
         [HttpPost]
         public IActionResult AddReview(int filmId, string text)

@@ -1,16 +1,29 @@
 ﻿<div id="app">
-    
+
     @if (User.IsInRole("admin"))
     {
         <div>
             <button class="btn btn-primary" v-on:click="showNewFilmModal">Add new film</button>
         </div>
-     }
-   
+    }
+
     <div class="form-group">
-        <label for="search">Search</label>
-        <input type="text" v-model="search" />
+        <label for="search">Simple search</label>
+        <input type="text" v-model="search" />        
     </div>
+    <div class="form-group">
+            <label for="searchGenre">Genre</label>
+            <input type="text" v-model="searchGenre" />
+
+            <label for="searchDirector">Director</label>
+            <input type="text" v-model="searchDirector" />
+
+            <label for="searchActor">Actor</label>
+            <input type="text" v-model="searchActor" />
+            <button type="button" class="btn btn-default btn-lg" v-on:click="searchFilms">Search</button>
+        </div>
+
+
     <table class="table">
         <thead>
             <tr>
@@ -32,8 +45,8 @@
                 <td>{{film.actor}}</td>
 
                 <td><button type="button" class="btn btn-default btn-lg" v-on:click="addToFavorite(film)">Like</button></td>
-                <td><button type="button" class="btn btn-default btn-lg" v-on:click="showNewReviewModal(film)"> Add review</button></td>
-                
+                <td><button type="button" class="btn btn-default btn-lg" v-on:click="showNewReviewModal(film)">Add review</button></td>
+
             </tr>
         </tbody>
     </table>
@@ -57,7 +70,7 @@
                             <input v-model="genre" type="text" class="form-control" style="width:100%" />
                         </div>
                         <div class="form-group">
-                            <label for="director">Director</label>
+                            <label for="director">Producer</label>
                             <input v-model="director" type="text" class="form-control" style="width:100%" />
                         </div>
                         <div class="form-group">
@@ -77,6 +90,7 @@
         </div>
 
     </div>
+
     <div class="modal fade" id="addReviewModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -105,8 +119,7 @@
             </div>
         </div>
 
-    </div>
-    
+    </div> 
 
 </div>
 
@@ -117,13 +130,16 @@
         var app = new Vue({
             el: "#app",
             data: {
-                
+                          
                 films: [],
                 film: [],
                 filmId: "",
                 reviews: [],
-                chosenFilm: '',
-                search: '',
+                chosenFilm: "",
+                search: "",
+                searchGenre: "",
+                searchActor: "",
+                searchDirector: "",                
                 name: "",
                 genre: "",
                 director: "",
@@ -138,15 +154,15 @@
             computed: {
                         
                 filteredFilms: function () {
+                    
                     var matcher = new RegExp(this.search, 'i')
                     return this.films.filter(function (film) {
                         //return matcher.test(film.name) только по названию
                         return matcher.test([film.name, film.director, film.genre, film.actor].join())
-                    })
+                    }) 
                 }
 
             },
-
 
             methods: {
                 clearData: function () {
@@ -157,8 +173,29 @@
                     vm.actor = "";
                     vm.text = "";
                     id = null;
+                    vm.searchActor = "";
+                    vm.searchDirector = "";
+                    vm.searchGenre = "";
+
                 },
+                searchFilms: function () {
+                    var vm = this;
+                    var searchParameters = {
+                        genre: vm.searchGenre,
+                        actor: vm.searchActor,
+                        director: vm.searchDirector
+                    }
+                    $.ajax({ url: "/searchfilms", data: searchParameters, method: "POST" })
+                        .done(function (data) {
+                            vm.films = data;
+                            toastr.success(data);
+                        }).fail(function () {
+                            toastr.error();
+                        }).always(function () {
+                            vm.clearData();
+                        });
                 
+                },
                 addToFavorite: function (item) {
 
                     var likeFilm = {

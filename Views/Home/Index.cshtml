@@ -15,7 +15,7 @@
             <label for="searchGenre">Genre</label>
             <input type="text" v-model="searchGenre" />
 
-            <label for="searchDirector">Director</label>
+            <label for="searchDirector">Producer</label>
             <input type="text" v-model="searchDirector" />
 
             <label for="searchActor">Actor</label>
@@ -183,9 +183,7 @@
                     vm.actor = "";
                     vm.text = "";
                     id = null;
-                    vm.searchActor = "";
-                    vm.searchDirector = "";
-                    vm.searchGenre = "";
+
 
                 },
                 searchFilms: function () {
@@ -201,8 +199,6 @@
                             toastr.success(data);
                         }).fail(function () {
                             toastr.error();
-                        }).always(function () {
-                            vm.clearData();
                         });
                 
                 },

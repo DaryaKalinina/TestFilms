@@ -90,60 +90,73 @@ namespace TestFilms.Controllers
             }
 
         }
+        /// <summary>
+        /// Поиск фильма по жанру, актеру и режиссеру
+        /// </summary>
+        /// <param name="genre"></param>
+        /// <param name="actor"></param>
+        /// <param name="director"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("/searchfilms")]
         public IActionResult SearchFilm(string genre,string actor,string director)
         {
+            IQueryable<Film> query = (IQueryable<Film>)_db.Films;
             //все поля заполнены 111
             if(genre != null && actor!=null && director!=null)
             {
-                var listOfFilms = _db.Films.Where(x => x.Genre == genre && x.Actor == actor && x.Director == director).ToList();
-                return Ok(listOfFilms);
+                query = query.Where(x => x.Genre == genre && x.Actor == actor && x.Director == director);
+                
             }
             //110
             if (genre != null && actor != null && director == null)
             {
-                var listOfFilms = _db.Films.Where(x => x.Genre == genre && x.Actor == actor).ToList();
-                return Ok(listOfFilms);
+                query = query.Where(x => x.Genre == genre && x.Actor == actor);
+                
             }
             // 101
             if (genre != null && actor == null && director != null) {
 
-                var listOfFilms = _db.Films.Where(x => x.Genre == genre && x.Director == director).ToList();
-                return Ok(listOfFilms);
+                query = query.Where(x => x.Genre == genre && x.Director == director);
+                
             }
             //100
             if (genre != null && actor == null && director == null)
             {
-                var listOfFilms = _db.Films.Where(x => x.Genre == genre).ToList();
-                return Ok(listOfFilms);
+                query = query.Where(x => x.Genre == genre);
+                
             }
             //010
             if (genre == null && actor != null && director == null)
             {
-                var listOfFilms = _db.Films.Where(x => x.Actor == actor).ToList();
-                return Ok(listOfFilms);
+                query = query.Where(x => x.Actor == actor);
+                
             }
             //011
             if (genre == null && actor != null && director != null)
             {
-                var listOfFilms = _db.Films.Where(x => x.Actor == actor && x.Director == director).ToList();
-                return Ok(listOfFilms);
+                query = query.Where(x => x.Actor == actor && x.Director == director);
+                
             }
             //001
             if (genre == null && actor == null && director != null)
             {
-                var listOfFilms = _db.Films.Where(x => x.Director == director).ToList();
-                return Ok(listOfFilms);
+                query = query.Where(x => x.Director == director);
+                
             }
             if (genre == null && actor == null && director == null)
             {
                 
                 return Ok("You didn't fill in the search parameters");
             }
+            var resultSearch = query.ToList();
+            if (resultSearch.Count == 0)
+            {
+                return Ok("I have nothing to show you.");
+            }
+            return Ok(resultSearch);
 
-
-            return Ok("I have nothing to show you.");
+            
 
         }
         /// <summary>
